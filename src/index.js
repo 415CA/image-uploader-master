@@ -1,10 +1,10 @@
-import 'dotenv/config';
 import cors from 'cors';
+import 'dotenv/config';
 import express from 'express';
-
+import { v4 as uuidv4 } from 'uuid';
 // API Data 
-import users from './Users';
-import messages from './Messages';
+import models from './models';
+
 
 // Port
 const PORT = process.env.PORT; 
@@ -12,40 +12,66 @@ const PORT = process.env.PORT;
 //Initialize Express
 const app = express();
 
+//Transform request.body Type
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 // Enable Cors
 app.use(cors());
 
-// RESTful Routes
-app.get('/users', (request, response) => {
-  return response.send(Object.values(users));
+// Assign Pseudo Authenticated User ID 
+app.use((req, res, next) => {
+  req.context = {
+    models,
+    me: models.users[1],
+  };
+
+  next();
 });
 
-app.get('/users/:userId', (request, response) => {
-  return response.send(users[request.params.userId]);
+// REST Routes
+app.get('/session', (req, res) => {
+  return res.send(req.context.models.users[req.context.me.id]);
 });
 
-app.post('/users', (request, response) => {
-  return response.send('Received a POST HTTP method on user resource');
+app.get('/users', (req, res) => {
+  return res.send(Object.values(req.context.models.users));
 });
 
-app.put('/users/:userID', (request, response) => {
-  return response.send(
-    `Received a PUT HTTP method on user/${request.params.userID} resource`
-  );
+app.get('/users/:userId', (req, res) => {
+  return res.send(req.context.models.users[req.params.userId]);
 });
 
-app.delete('/users/:userID', (request, response) => {
-  return response.send(
-    `Received a DELETE HTTP method on user/${request.params.userID} resource`
-  );
+app.get('/messages', (req, res) => {
+  return res.send(Object.values(req.context.models.messages));
 });
 
-app.get('/messages', (request, response) => {
-  return response.send(Object.values(messages));
+app.get('/messages/:messageId', (req, res) => {
+  return res.send(req.context.models.messages[req.params.messageId]);
 });
 
-app.get('/messages/:messageId', (request, response) => {
-  return response.send(messages[request.params.messageId]);
+app.post('/messages', (req, res) => {
+  const id = uuidv4();
+  const message = {
+    id,
+    text: req.body.text,
+    userId: req.context.me.id,
+  };
+
+  req.context.models.messages[id] = message;
+
+  return res.send(message);
+});
+
+app.delete('/messages/:messageId', (req, res) => {
+  const {
+    [req.params.messageId]: message,
+    ...otherMessages
+  } = req.context.models.messages;
+
+  req.context.models.messages = otherMessages;
+
+  return res.send(message);
 });
 
 // Enable App Server
