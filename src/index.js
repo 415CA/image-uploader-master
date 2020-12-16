@@ -8,20 +8,24 @@ const app = express();
 
 app.use(cors());
 
-app.get('/', (request, response) => {
-  return response.send('Received a GET HTTP method');
+app.get('/users', (request, response) => {
+  return response.send('Received a GET HTTP method on user resource');
 });
 
-app.post('/', (request, response) => {
-  return response.send('Received a POST HTTP method');
+app.post('/users', (request, response) => {
+  return response.send('Received a POST HTTP method on user resource');
 });
 
-app.put('/', (request, response) => {
-  return response.send('Received a PUT HTTP method');
+app.put('/users/:userID', (request, response) => {
+  return response.send(
+    `Received a PUT HTTP method on user/${request.params.userID} resource`
+  );
 });
 
-app.delete('/', (request, response) => {
-  return response.send('Received a DELETE HTTP method');
+app.delete('/users/:userID', (request, response) => {
+  return response.send(
+    `Received a DELETE HTTP method on user/${request.params.userID} resource`
+  );
 });
 
 app.listen(PORT, () =>
