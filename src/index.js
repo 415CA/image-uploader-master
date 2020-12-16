@@ -8,8 +8,20 @@ const app = express();
 
 app.use(cors());
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
+app.get('/', (request, response) => {
+  return response.send('Received a GET HTTP method');
+});
+
+app.post('/', (request, response) => {
+  return response.send('Received a POST HTTP method');
+});
+
+app.put('/', (request, response) => {
+  return response.send('Received a PUT HTTP method');
+});
+
+app.delete('/', (request, response) => {
+  return response.send('Received a DELETE HTTP method');
 });
 
 app.listen(PORT, () =>
