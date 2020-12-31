@@ -1,11 +1,10 @@
 import cors from 'cors';
 import 'dotenv/config';
 import express from 'express';
-import models, { sequelize } from './models';
+import { models, sequelize } from './models';
 import { v4 as uuidv4 } from 'uuid';
 
 // API Data 
-import models from './models';
 import routes from './routes';
 
 // Port

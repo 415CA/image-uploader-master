@@ -1,12 +1,6 @@
-// import messages from './Messages';
-// import users from './Users';
-
-// export default {
-//   users,
-//   messages,
-// };
-
 import Sequelize from 'sequelize';
+import user from './User';
+import message from './Message'
 
 const sequelize = new Sequelize(
   process.env.DATABASE,
@@ -18,16 +12,16 @@ const sequelize = new Sequelize(
 );
 
 const models = {
-  User: sequelize.import('./User'),
-  Message: sequelize.import('./Message'),
+  User: user(sequelize, Sequelize.DataTypes),
+  Message: message(sequelize, Sequelize.DataTypes),
 };
 
-Object.keys(models).forEach(key => {
+Object.keys(models).forEach((key) => {
   if ('associate' in models[key]) {
     models[key].associate(models);
   }
 });
 
-export { sequelize };
+export { models, sequelize };
 
-export default models;
+// export default models;
